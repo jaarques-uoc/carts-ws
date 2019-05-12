@@ -1,9 +1,9 @@
 package com.jaarquesuoc.shop.carts.services;
 
-import com.jaarquesuoc.shop.carts.dtos.Cart;
-import com.jaarquesuoc.shop.carts.dtos.NextOrderId;
-import com.jaarquesuoc.shop.carts.dtos.OrderItem;
-import com.jaarquesuoc.shop.carts.dtos.Product;
+import com.jaarquesuoc.shop.carts.dtos.CartDto;
+import com.jaarquesuoc.shop.carts.dtos.NextOrderIdDto;
+import com.jaarquesuoc.shop.carts.dtos.OrderItemDto;
+import com.jaarquesuoc.shop.carts.dtos.ProductDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,46 +22,46 @@ public class CartsService {
 
     private final ProductsService productsService;
 
-    public Cart getCart(final String customerId) {
-        NextOrderId nextOrderId = ordersService.getNextOrderId(customerId);
+    public CartDto getCart(final String customerId) {
+        NextOrderIdDto nextOrderIdDto = ordersService.getNextOrderId(customerId);
 
-        return buildCart(nextOrderId.getNextOrderId(), customerId);
+        return buildCart(nextOrderIdDto.getNextOrderId(), customerId);
     }
 
-    public Cart updateOrderItem(final String customerId, final OrderItem updatedOrderItem) {
-        Cart cart = getCart(customerId);
+    public CartDto updateOrderItem(final String customerId, final OrderItemDto updatedOrderItemDto) {
+        CartDto cartDto = getCart(customerId);
 
-        cart.getOrderItems().stream()
-            .filter(orderItem -> orderItem.equalsProductId(updatedOrderItem))
-            .forEach(orderItem -> orderItem.setQuantity(updatedOrderItem.getQuantity()));
+        cartDto.getOrderItemDtos().stream()
+            .filter(orderItemDto -> orderItemDto.equalsProductId(updatedOrderItemDto))
+            .forEach(orderItemDto -> orderItemDto.setQuantity(updatedOrderItemDto.getQuantity()));
 
-        return cart;
+        return cartDto;
     }
 
-    private Cart buildCart(final String id, final String customerId) {
-        return Cart.builder()
+    private CartDto buildCart(final String id, final String customerId) {
+        return CartDto.builder()
             .id(id)
             .date(LocalDateTime.now())
             .customerId(customerId)
-            .orderItems(buildOrderItems())
+            .orderItemDtos(buildOrderItems())
             .build();
     }
 
-    private List<OrderItem> buildOrderItems() {
+    private List<OrderItemDto> buildOrderItems() {
         List<String> productIds = IntStream.range(0, 5)
             .mapToObj(String::valueOf)
             .collect(toList());
 
-        List<Product> products = productsService.getProducts(productIds);
+        List<ProductDto> productDtos = productsService.getProducts(productIds);
 
-        return products.stream()
+        return productDtos.stream()
             .map(this::buildOrderItem)
             .collect(toList());
     }
 
-    private OrderItem buildOrderItem(final Product product) {
-        return OrderItem.builder()
-            .product(product)
+    private OrderItemDto buildOrderItem(final ProductDto productDto) {
+        return OrderItemDto.builder()
+            .productDto(productDto)
             .quantity(2)
             .build();
     }

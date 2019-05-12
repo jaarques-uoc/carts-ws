@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class Cart {
+public class CartDto {
 
     private String id;
 
@@ -16,5 +16,5 @@ public class Cart {
 
     private String customerId;
 
-    private List<OrderItem> orderItems;
+    private List<OrderItemDto> orderItemDtos;
 }

@@ -1,7 +1,7 @@
 package com.jaarquesuoc.shop.carts.controllers;
 
-import com.jaarquesuoc.shop.carts.dtos.Cart;
-import com.jaarquesuoc.shop.carts.dtos.OrderItem;
+import com.jaarquesuoc.shop.carts.dtos.CartDto;
+import com.jaarquesuoc.shop.carts.dtos.OrderItemDto;
 import com.jaarquesuoc.shop.carts.services.CartsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +18,13 @@ public class CustomersController {
     private final CartsService cartsService;
 
     @GetMapping("/customers/{customerId}/cart")
-    public Cart getCart(@PathVariable("customerId") final String customerId) {
+    public CartDto getCart(@PathVariable("customerId") final String customerId) {
         return cartsService.getCart(customerId);
     }
 
     @PostMapping("/customers/{customerId}/cart")
-    public Cart updateCart(@PathVariable("customerId") final String customerId,
-                           @RequestBody OrderItem updatedOrderItem) {
-        return cartsService.updateOrderItem(customerId, updatedOrderItem);
+    public CartDto updateCart(@PathVariable("customerId") final String customerId,
+                              @RequestBody OrderItemDto updatedOrderItemDto) {
+        return cartsService.updateOrderItem(customerId, updatedOrderItemDto);
     }
 }

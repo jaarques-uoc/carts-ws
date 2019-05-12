@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderItem {
+public class OrderItemDto {
 
-    private Product product;
+    private ProductDto productDto;
 
     private int quantity;
 
-    public boolean equalsProductId(final OrderItem orderItem) {
-        return product.getId().equals(orderItem.getProduct().getId());
+    public boolean equalsProductId(final OrderItemDto orderItemDto) {
+        return productDto.getId().equals(orderItemDto.getProductDto().getId());
     }
 }

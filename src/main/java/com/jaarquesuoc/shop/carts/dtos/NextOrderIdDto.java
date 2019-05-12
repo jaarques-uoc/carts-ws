@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NextOrderId {
+public class NextOrderIdDto {
 
     private String nextOrderId;
 }

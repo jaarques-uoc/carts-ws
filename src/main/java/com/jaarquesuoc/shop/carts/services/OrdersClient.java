@@ -1,6 +1,6 @@
 package com.jaarquesuoc.shop.carts.services;
 
-import com.jaarquesuoc.shop.carts.dtos.NextOrderId;
+import com.jaarquesuoc.shop.carts.dtos.NextOrderIdDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface OrdersClient {
 
     @GetMapping("/customers/{customerId}/nextOrderId")
-    NextOrderId getNextOrderId(@PathVariable("customerId") final String customerId);
+    NextOrderIdDto getNextOrderId(@PathVariable("customerId") final String customerId);
 }
