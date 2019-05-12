@@ -29,12 +29,9 @@ public class CartsService {
     public Cart updateOrderItem(final String customerId, final OrderItem updatedOrderItem) {
         Cart cart = getCart(customerId);
 
-        cart.getOrderItems()
-            .forEach(orderItem -> {
-                if (orderItem.getProduct().getId().equals(updatedOrderItem.getProduct().getId())) {
-                    orderItem.setQuantity(updatedOrderItem.getQuantity());
-                }
-            });
+        cart.getOrderItems().stream()
+            .filter(orderItem -> orderItem.equalsProductId(updatedOrderItem))
+            .forEach(orderItem -> orderItem.setQuantity(updatedOrderItem.getQuantity()));
 
         return cart;
     }

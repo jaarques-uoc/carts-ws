@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -14,4 +16,8 @@ public class OrderItem {
     private Product product;
 
     private int quantity;
+
+    public boolean equalsProductId(final OrderItem orderItem) {
+        return product.getId().equals(orderItem.getProduct().getId());
+    }
 }
