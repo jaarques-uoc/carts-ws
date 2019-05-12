@@ -1,7 +1,6 @@
 package com.jaarquesuoc.shop.carts.services;
 
-import com.jaarquesuoc.shop.carts.models.NextOrderId;
-import com.jaarquesuoc.shop.carts.models.Product;
+import com.jaarquesuoc.shop.carts.dtos.NextOrderId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

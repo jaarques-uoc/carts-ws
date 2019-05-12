@@ -1,8 +1,8 @@
 package com.jaarquesuoc.shop.carts.services;
 
-import com.jaarquesuoc.shop.carts.models.Cart;
-import com.jaarquesuoc.shop.carts.models.NextOrderId;
-import com.jaarquesuoc.shop.carts.models.OrderItem;
+import com.jaarquesuoc.shop.carts.dtos.Cart;
+import com.jaarquesuoc.shop.carts.dtos.NextOrderId;
+import com.jaarquesuoc.shop.carts.dtos.OrderItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +24,19 @@ public class CartsService {
         NextOrderId nextOrderId = ordersService.getNextOrderId(customerId);
 
         return buildCart(nextOrderId.getNextOrderId(), customerId);
+    }
+
+    public Cart updateOrderItem(final String customerId, final OrderItem updatedOrderItem) {
+        Cart cart = getCart(customerId);
+
+        cart.getOrderItems()
+            .forEach(orderItem -> {
+                if (orderItem.getProduct().getId().equals(updatedOrderItem.getProduct().getId())) {
+                    orderItem.setQuantity(updatedOrderItem.getQuantity());
+                }
+            });
+
+        return cart;
     }
 
     private Cart buildCart(final String id, final String customerId) {

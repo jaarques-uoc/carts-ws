@@ -1,7 +1,6 @@
 package com.jaarquesuoc.shop.carts.services;
 
-import com.jaarquesuoc.shop.carts.models.NextOrderId;
-import com.jaarquesuoc.shop.carts.models.Product;
+import com.jaarquesuoc.shop.carts.dtos.NextOrderId;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
