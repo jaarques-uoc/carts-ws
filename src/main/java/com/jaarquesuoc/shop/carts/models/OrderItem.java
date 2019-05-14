@@ -1,4 +1,4 @@
-package com.jaarquesuoc.shop.carts.dtos;
+package com.jaarquesuoc.shop.carts.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class NextOrderIdDto {
+public class OrderItem {
 
-    private String nextOrderId;
+    private String productId;
+
+    private int quantity;
 }

@@ -4,13 +4,18 @@ import com.jaarquesuoc.shop.carts.dtos.CartDto;
 import com.jaarquesuoc.shop.carts.dtos.NextOrderIdDto;
 import com.jaarquesuoc.shop.carts.dtos.OrderItemDto;
 import com.jaarquesuoc.shop.carts.dtos.ProductDto;
+import com.jaarquesuoc.shop.carts.mappers.CartMapper;
+import com.jaarquesuoc.shop.carts.models.Cart;
+import com.jaarquesuoc.shop.carts.models.OrderItem;
+import com.jaarquesuoc.shop.carts.repositories.CartsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.Map;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -22,47 +27,102 @@ public class CartsService {
 
     private final ProductsService productsService;
 
-    public CartDto getCart(final String customerId) {
+    private final CartsRepository cartsRepository;
+
+    public CartDto getCartDto(final String customerId) {
+        CartDto cartDto = CartMapper.INSTANCE.toCartDto(getCart(customerId));
+
+        return populateCartDtoWithProducts(cartDto);
+    }
+
+    public CartDto incrementOrderItem(final String customerId, final ProductDto productDto) {
+        Cart cart = CartMapper.INSTANCE.replicate(getCart(customerId));
+
+        List<OrderItem> orderItems = Optional.ofNullable(cart.getOrderItems())
+            .orElse(new ArrayList<>());
+
+        incrementOrderItem(orderItems, productDto);
+
+        cart.setOrderItems(orderItems);
+
+        Cart updatedCart = cartsRepository.save(cart);
+
+        return populateCartDtoWithProducts(CartMapper.INSTANCE.toCartDto(updatedCart));
+
+    }
+
+    private void incrementOrderItem(final List<OrderItem> orderItems, final ProductDto productDto) {
+        OrderItem orderItem = orderItems.stream()
+            .filter(oi -> oi.getProductId().equals(productDto.getId()))
+            .findFirst()
+            .orElse(OrderItem.builder()
+                .productId(productDto.getId())
+                .quantity(0)
+                .build());
+
+        orderItems.remove(orderItem);
+
+        orderItem.setQuantity(orderItem.getQuantity() + 1);
+
+        orderItems.add(orderItem);
+    }
+
+    public CartDto upsertOrderItem(final String customerId, final OrderItemDto upsertOrderItemDto) {
+        Cart cart = CartMapper.INSTANCE.replicate(getCart(customerId));
+
+        List<OrderItem> orderItems = Optional.ofNullable(cart.getOrderItems())
+            .orElse(new ArrayList<>());
+
+        removeOrderItem(orderItems, upsertOrderItemDto);
+
+        if (upsertOrderItemDto.getQuantity() != 0) {
+            orderItems.add(CartMapper.INSTANCE.toOrderItem(upsertOrderItemDto));
+        }
+
+        cart.setOrderItems(orderItems);
+
+        Cart updatedCart = cartsRepository.save(cart);
+
+        return populateCartDtoWithProducts(CartMapper.INSTANCE.toCartDto(updatedCart));
+    }
+
+    private void removeOrderItem(final List<OrderItem> orderItems, final OrderItemDto upsertOrderItemDto) {
+        List<OrderItem> toBeRemoved = orderItems.stream()
+            .filter(orderItem -> orderItem.getProductId().equals(upsertOrderItemDto.getProductDto().getId()))
+            .collect(toList());
+
+        orderItems.removeAll(toBeRemoved);
+    }
+
+    private Cart getCart(final String customerId) {
         NextOrderIdDto nextOrderIdDto = ordersService.getNextOrderId(customerId);
 
-        return buildCart(nextOrderIdDto.getNextOrderId(), customerId);
+        return cartsRepository.findFirstByOrderIdOrderByDateDesc(nextOrderIdDto.getNextOrderId())
+            .orElse(createNewCart(nextOrderIdDto.getNextOrderId(), customerId));
     }
 
-    public CartDto updateOrderItem(final String customerId, final OrderItemDto updatedOrderItemDto) {
-        CartDto cartDto = getCart(customerId);
+    private Cart createNewCart(final String orderId, final String customerId) {
+        return Cart.builder()
+            .orderId(orderId)
+            .customerId(customerId)
+            .build();
+    }
 
-        cartDto.getOrderItemDtos().stream()
-            .filter(orderItemDto -> orderItemDto.equalsProductId(updatedOrderItemDto))
-            .forEach(orderItemDto -> orderItemDto.setQuantity(updatedOrderItemDto.getQuantity()));
+    private CartDto populateCartDtoWithProducts(final CartDto cartDto) {
+        if (cartDto.getOrderItemDtos() == null) {
+            return cartDto;
+        }
+
+        List<String> productIds = cartDto.getOrderItemDtos().stream()
+            .map(OrderItemDto::getProductDto)
+            .map(ProductDto::getId)
+            .collect(toList());
+
+        Map<String, ProductDto> productDtos = productsService.getProducts(productIds);
+
+        cartDto.getOrderItemDtos()
+            .forEach(orderItemDto -> orderItemDto.setProductDto(productDtos.get(orderItemDto.getProductDto().getId())));
 
         return cartDto;
-    }
-
-    private CartDto buildCart(final String id, final String customerId) {
-        return CartDto.builder()
-            .id(id)
-            .date(LocalDateTime.now())
-            .customerId(customerId)
-            .orderItemDtos(buildOrderItems())
-            .build();
-    }
-
-    private List<OrderItemDto> buildOrderItems() {
-        List<String> productIds = IntStream.range(0, 5)
-            .mapToObj(String::valueOf)
-            .collect(toList());
-
-        List<ProductDto> productDtos = productsService.getProducts(productIds);
-
-        return productDtos.stream()
-            .map(this::buildOrderItem)
-            .collect(toList());
-    }
-
-    private OrderItemDto buildOrderItem(final ProductDto productDto) {
-        return OrderItemDto.builder()
-            .productDto(productDto)
-            .quantity(2)
-            .build();
     }
 }

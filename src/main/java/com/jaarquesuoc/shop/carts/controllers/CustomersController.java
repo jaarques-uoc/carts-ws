@@ -2,6 +2,7 @@ package com.jaarquesuoc.shop.carts.controllers;
 
 import com.jaarquesuoc.shop.carts.dtos.CartDto;
 import com.jaarquesuoc.shop.carts.dtos.OrderItemDto;
+import com.jaarquesuoc.shop.carts.dtos.ProductDto;
 import com.jaarquesuoc.shop.carts.services.CartsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,18 @@ public class CustomersController {
 
     @GetMapping("/customers/{customerId}/cart")
     public CartDto getCart(@PathVariable("customerId") final String customerId) {
-        return cartsService.getCart(customerId);
+        return cartsService.getCartDto(customerId);
     }
 
-    @PostMapping("/customers/{customerId}/cart")
-    public CartDto updateCart(@PathVariable("customerId") final String customerId,
-                              @RequestBody OrderItemDto updatedOrderItemDto) {
-        return cartsService.updateOrderItem(customerId, updatedOrderItemDto);
+    @PostMapping("/customers/{customerId}/cart/item")
+    public CartDto updateItemInCart(@PathVariable("customerId") final String customerId,
+                                    @RequestBody OrderItemDto updatedOrderItemDto) {
+        return cartsService.upsertOrderItem(customerId, updatedOrderItemDto);
+    }
+
+    @PostMapping("/customers/{customerId}/cart/item/increment")
+    public CartDto incrementItemInCart(@PathVariable("customerId") final String customerId,
+                                       @RequestBody ProductDto productDto) {
+        return cartsService.incrementOrderItem(customerId, productDto);
     }
 }
