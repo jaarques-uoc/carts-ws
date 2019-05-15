@@ -29,6 +29,8 @@ public class CartsService {
 
     private final CartsRepository cartsRepository;
 
+    private static final int MAX_ORDER_ITEMS = 10;
+
     public CartDto getCartDto(final String customerId) {
         CartDto cartDto = CartMapper.INSTANCE.toCartDto(getCart(customerId));
 
@@ -62,7 +64,9 @@ public class CartsService {
 
         orderItems.remove(orderItem);
 
-        orderItem.setQuantity(orderItem.getQuantity() + 1);
+        if (orderItem.getQuantity() < MAX_ORDER_ITEMS) {
+            orderItem.setQuantity(orderItem.getQuantity() + 1);
+        }
 
         orderItems.add(orderItem);
     }
@@ -75,7 +79,7 @@ public class CartsService {
 
         removeOrderItem(orderItems, upsertOrderItemDto);
 
-        if (upsertOrderItemDto.getQuantity() != 0) {
+        if (upsertOrderItemDto.getQuantity() > 0 && upsertOrderItemDto.getQuantity() < MAX_ORDER_ITEMS) {
             orderItems.add(CartMapper.INSTANCE.toOrderItem(upsertOrderItemDto));
         }
 
