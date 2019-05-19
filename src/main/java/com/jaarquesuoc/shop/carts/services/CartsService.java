@@ -5,6 +5,7 @@ import com.jaarquesuoc.shop.carts.dtos.CustomerDto;
 import com.jaarquesuoc.shop.carts.dtos.NextOrderIdDto;
 import com.jaarquesuoc.shop.carts.dtos.OrderItemDto;
 import com.jaarquesuoc.shop.carts.dtos.ProductDto;
+import com.jaarquesuoc.shop.carts.exceptions.NumberOfItemsExceededException;
 import com.jaarquesuoc.shop.carts.mappers.CartMapper;
 import com.jaarquesuoc.shop.carts.models.Cart;
 import com.jaarquesuoc.shop.carts.models.OrderItem;
@@ -83,14 +84,24 @@ public class CartsService {
 
         orderItems.remove(orderItem);
 
-        if (orderItem.getQuantity() < MAX_ORDER_ITEMS) {
-            orderItem.setQuantity(orderItem.getQuantity() + 1);
-        }
+        int quantity = orderItem.getQuantity() + 1;
+
+        validateQuantity(quantity);
+
+        orderItem.setQuantity(quantity);
 
         orderItems.add(orderItem);
     }
 
+    private void validateQuantity(final int quantity) {
+        if (quantity < 0 || quantity > MAX_ORDER_ITEMS) {
+            throw new NumberOfItemsExceededException(quantity);
+        }
+    }
+
     public CartDto upsertOrderItem(final String customerId, final OrderItemDto upsertOrderItemDto) {
+        validateQuantity(upsertOrderItemDto.getQuantity());
+
         CustomerDto customerDto = customersService.getCustomerDto(customerId);
 
         return upsertOrderItem(customerDto, upsertOrderItemDto);
@@ -104,9 +115,7 @@ public class CartsService {
 
         removeOrderItem(orderItems, upsertOrderItemDto);
 
-        if (upsertOrderItemDto.getQuantity() > 0 && upsertOrderItemDto.getQuantity() < MAX_ORDER_ITEMS) {
-            orderItems.add(CartMapper.INSTANCE.toOrderItem(upsertOrderItemDto));
-        }
+        orderItems.add(CartMapper.INSTANCE.toOrderItem(upsertOrderItemDto));
 
         cart.setOrderItems(orderItems);
 
