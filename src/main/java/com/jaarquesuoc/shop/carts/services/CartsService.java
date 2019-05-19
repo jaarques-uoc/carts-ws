@@ -1,6 +1,7 @@
 package com.jaarquesuoc.shop.carts.services;
 
 import com.jaarquesuoc.shop.carts.dtos.CartDto;
+import com.jaarquesuoc.shop.carts.dtos.CustomerDto;
 import com.jaarquesuoc.shop.carts.dtos.NextOrderIdDto;
 import com.jaarquesuoc.shop.carts.dtos.OrderItemDto;
 import com.jaarquesuoc.shop.carts.dtos.ProductDto;
@@ -27,6 +28,8 @@ public class CartsService {
 
     private final ProductsService productsService;
 
+    private final CustomersService customersService;
+
     private final CartsRepository cartsRepository;
 
     private static final int MAX_ORDER_ITEMS = 10;
@@ -37,8 +40,24 @@ public class CartsService {
         return populateCartDtoWithProducts(cartDto);
     }
 
+    public List<CartDto> getAllCartDtos() {
+        return cartsRepository.findAll().stream()
+            .map(CartMapper.INSTANCE::toCartDto)
+            .collect(toList());
+    }
+
+    public void cleanDb() {
+        cartsRepository.deleteAll();
+    }
+
     public CartDto incrementOrderItem(final String customerId, final ProductDto productDto) {
-        Cart cart = CartMapper.INSTANCE.replicate(getCart(customerId));
+        CustomerDto customerDto = customersService.getCustomerDto(customerId);
+
+        return incrementOrderItem(customerDto, productDto);
+    }
+
+    private CartDto incrementOrderItem(final CustomerDto customerDto, final ProductDto productDto) {
+        Cart cart = CartMapper.INSTANCE.replicate(getCart(customerDto.getId()));
 
         List<OrderItem> orderItems = Optional.ofNullable(cart.getOrderItems())
             .orElse(new ArrayList<>());
@@ -72,7 +91,13 @@ public class CartsService {
     }
 
     public CartDto upsertOrderItem(final String customerId, final OrderItemDto upsertOrderItemDto) {
-        Cart cart = CartMapper.INSTANCE.replicate(getCart(customerId));
+        CustomerDto customerDto = customersService.getCustomerDto(customerId);
+
+        return upsertOrderItem(customerDto, upsertOrderItemDto);
+    }
+
+    private CartDto upsertOrderItem(final CustomerDto customerDto, final OrderItemDto upsertOrderItemDto) {
+        Cart cart = CartMapper.INSTANCE.replicate(getCart(customerDto.getId()));
 
         List<OrderItem> orderItems = Optional.ofNullable(cart.getOrderItems())
             .orElse(new ArrayList<>());
