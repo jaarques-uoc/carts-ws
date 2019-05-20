@@ -18,18 +18,18 @@ public class CustomersController {
 
     private final CartsService cartsService;
 
-    @GetMapping("/customers/{customerId}/cart")
+    @GetMapping("/customers/{customerId}/carts/current")
     public CartDto getCart(@PathVariable("customerId") final String customerId) {
         return cartsService.getCartDto(customerId);
     }
 
-    @PostMapping("/customers/{customerId}/cart/item")
+    @PostMapping("/customers/{customerId}/carts/current/item")
     public CartDto updateItemInCart(@PathVariable("customerId") final String customerId,
                                     @RequestBody OrderItemDto updatedOrderItemDto) {
         return cartsService.upsertOrderItem(customerId, updatedOrderItemDto);
     }
 
-    @PostMapping("/customers/{customerId}/cart/item/increment")
+    @PostMapping("/customers/{customerId}/carts/current/item/increment")
     public CartDto incrementItemInCart(@PathVariable("customerId") final String customerId,
                                        @RequestBody ProductDto productDto) {
         return cartsService.incrementOrderItem(customerId, productDto);
