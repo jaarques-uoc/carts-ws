@@ -33,6 +33,8 @@ public class CartsService {
 
     private final CartsRepository cartsRepository;
 
+    private static final int MIN_ORDER_ITEMS = 0;
+
     private static final int MAX_ORDER_ITEMS = 10;
 
     public CartDto getCartDto(final String customerId) {
@@ -94,7 +96,7 @@ public class CartsService {
     }
 
     private void validateQuantity(final int quantity) {
-        if (quantity < 0 || quantity > MAX_ORDER_ITEMS) {
+        if (quantity < MIN_ORDER_ITEMS || quantity > MAX_ORDER_ITEMS) {
             throw new NumberOfItemsExceededException(quantity);
         }
     }
@@ -115,7 +117,9 @@ public class CartsService {
 
         removeOrderItem(orderItems, upsertOrderItemDto);
 
-        orderItems.add(CartMapper.INSTANCE.toOrderItem(upsertOrderItemDto));
+        if (upsertOrderItemDto.getQuantity() != 0) {
+            orderItems.add(CartMapper.INSTANCE.toOrderItem(upsertOrderItemDto));
+        }
 
         cart.setOrderItems(orderItems);
 

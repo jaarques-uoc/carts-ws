@@ -23,13 +23,13 @@ public class CustomersController {
         return cartsService.getCartDto(customerId);
     }
 
-    @PostMapping("/customers/{customerId}/carts/current/item")
+    @PostMapping("/customers/{customerId}/carts/current/items")
     public CartDto updateItemInCart(@PathVariable("customerId") final String customerId,
                                     @RequestBody OrderItemDto updatedOrderItemDto) {
         return cartsService.upsertOrderItem(customerId, updatedOrderItemDto);
     }
 
-    @PostMapping("/customers/{customerId}/carts/current/item/increment")
+    @PostMapping("/customers/{customerId}/carts/current/items/increment")
     public CartDto incrementItemInCart(@PathVariable("customerId") final String customerId,
                                        @RequestBody ProductDto productDto) {
         return cartsService.incrementOrderItem(customerId, productDto);
