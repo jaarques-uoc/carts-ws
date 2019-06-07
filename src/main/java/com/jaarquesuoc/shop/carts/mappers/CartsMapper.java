@@ -9,6 +9,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper
 public interface CartsMapper {
 
@@ -19,6 +21,8 @@ public interface CartsMapper {
 
     @InheritInverseConfiguration
     Cart toCart(CartDto cartDto);
+
+    List<CartDto> toCartDtos(List<Cart> carts);
 
     @Mapping(source = "productId", target = "productDto.id")
     OrderItemDto toOrderItemDto(OrderItem orderItem);

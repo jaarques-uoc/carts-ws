@@ -44,9 +44,9 @@ public class CartsService {
     }
 
     public List<CartDto> getAllCartDtos() {
-        return cartsRepository.findAll().stream()
-            .map(CartsMapper.INSTANCE::toCartDto)
-            .collect(toList());
+        List<Cart> carts = cartsRepository.findAll();
+
+        return CartsMapper.INSTANCE.toCartDtos(carts);
     }
 
     public void cleanDb() {
