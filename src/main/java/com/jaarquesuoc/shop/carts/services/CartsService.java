@@ -6,7 +6,7 @@ import com.jaarquesuoc.shop.carts.dtos.NextOrderIdDto;
 import com.jaarquesuoc.shop.carts.dtos.OrderItemDto;
 import com.jaarquesuoc.shop.carts.dtos.ProductDto;
 import com.jaarquesuoc.shop.carts.exceptions.NumberOfItemsExceededException;
-import com.jaarquesuoc.shop.carts.mappers.CartMapper;
+import com.jaarquesuoc.shop.carts.mappers.CartsMapper;
 import com.jaarquesuoc.shop.carts.models.Cart;
 import com.jaarquesuoc.shop.carts.models.OrderItem;
 import com.jaarquesuoc.shop.carts.repositories.CartsRepository;
@@ -38,14 +38,14 @@ public class CartsService {
     private static final int MAX_ORDER_ITEMS = 10;
 
     public CartDto getCartDto(final String customerId) {
-        CartDto cartDto = CartMapper.INSTANCE.toCartDto(getCart(customerId));
+        CartDto cartDto = CartsMapper.INSTANCE.toCartDto(getCart(customerId));
 
         return populateCartDtoWithProducts(cartDto);
     }
 
     public List<CartDto> getAllCartDtos() {
         return cartsRepository.findAll().stream()
-            .map(CartMapper.INSTANCE::toCartDto)
+            .map(CartsMapper.INSTANCE::toCartDto)
             .collect(toList());
     }
 
@@ -60,7 +60,7 @@ public class CartsService {
     }
 
     private CartDto incrementOrderItem(final CustomerDto customerDto, final ProductDto productDto) {
-        Cart cart = CartMapper.INSTANCE.replicate(getCart(customerDto.getId()));
+        Cart cart = CartsMapper.INSTANCE.replicate(getCart(customerDto.getId()));
 
         List<OrderItem> orderItems = Optional.ofNullable(cart.getOrderItems())
             .orElse(new ArrayList<>());
@@ -71,7 +71,7 @@ public class CartsService {
 
         Cart updatedCart = cartsRepository.save(cart);
 
-        return populateCartDtoWithProducts(CartMapper.INSTANCE.toCartDto(updatedCart));
+        return populateCartDtoWithProducts(CartsMapper.INSTANCE.toCartDto(updatedCart));
 
     }
 
@@ -110,7 +110,7 @@ public class CartsService {
     }
 
     private CartDto upsertOrderItem(final CustomerDto customerDto, final OrderItemDto upsertOrderItemDto) {
-        Cart cart = CartMapper.INSTANCE.replicate(getCart(customerDto.getId()));
+        Cart cart = CartsMapper.INSTANCE.replicate(getCart(customerDto.getId()));
 
         List<OrderItem> orderItems = Optional.ofNullable(cart.getOrderItems())
             .orElse(new ArrayList<>());
@@ -118,14 +118,14 @@ public class CartsService {
         removeOrderItem(orderItems, upsertOrderItemDto);
 
         if (upsertOrderItemDto.getQuantity() != 0) {
-            orderItems.add(CartMapper.INSTANCE.toOrderItem(upsertOrderItemDto));
+            orderItems.add(CartsMapper.INSTANCE.toOrderItem(upsertOrderItemDto));
         }
 
         cart.setOrderItems(orderItems);
 
         Cart updatedCart = cartsRepository.save(cart);
 
-        return populateCartDtoWithProducts(CartMapper.INSTANCE.toCartDto(updatedCart));
+        return populateCartDtoWithProducts(CartsMapper.INSTANCE.toCartDto(updatedCart));
     }
 
     private void removeOrderItem(final List<OrderItem> orderItems, final OrderItemDto upsertOrderItemDto) {
