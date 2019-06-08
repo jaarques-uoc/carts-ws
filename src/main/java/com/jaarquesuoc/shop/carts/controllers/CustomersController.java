@@ -1,6 +1,7 @@
 package com.jaarquesuoc.shop.carts.controllers;
 
 import com.jaarquesuoc.shop.carts.dtos.CartDto;
+import com.jaarquesuoc.shop.carts.dtos.OrderDto;
 import com.jaarquesuoc.shop.carts.dtos.OrderItemDto;
 import com.jaarquesuoc.shop.carts.dtos.ProductDto;
 import com.jaarquesuoc.shop.carts.services.CartsService;
@@ -23,9 +24,9 @@ public class CustomersController {
         return cartsService.getCartDto(customerId);
     }
 
-    @GetMapping("/customers/{customerId}/carts/current/checkout")
-    public void checkoutCart(@PathVariable("customerId") final String customerId) {
-        cartsService.checkoutCart(customerId);
+    @PostMapping("/customers/{customerId}/carts/current/checkout")
+    public OrderDto checkoutCart(@PathVariable("customerId") final String customerId) {
+        return cartsService.checkoutCart(customerId);
     }
 
     @PostMapping("/customers/{customerId}/carts/current/items")

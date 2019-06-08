@@ -35,7 +35,7 @@ public interface CartsMapper {
     @Mapping(target = "id", ignore = true)
     Cart replicate(Cart cart);
 
+    @Mapping(target = "amount", ignore = true)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "orderId", ignore = true)
     OrderDto toOrderDto(CartDto cartDto);
 }

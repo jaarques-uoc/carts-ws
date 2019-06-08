@@ -44,10 +44,10 @@ public class CartsService {
         return populateCartDtoWithProducts(cartDto);
     }
 
-    public void checkoutCart(final String customerId) {
+    public OrderDto checkoutCart(final String customerId) {
         CartDto cartDto = getCartDto(customerId);
 
-        ordersService.createCustomerOrderDto(cartDto, customerId);
+        return ordersService.createCustomerOrderDto(cartDto, customerId);
     }
 
     public List<CartDto> getAllCartDtos() {
