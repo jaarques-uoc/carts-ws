@@ -1,6 +1,7 @@
 package com.jaarquesuoc.shop.carts.mappers;
 
 import com.jaarquesuoc.shop.carts.dtos.CartDto;
+import com.jaarquesuoc.shop.carts.dtos.OrderDto;
 import com.jaarquesuoc.shop.carts.dtos.OrderItemDto;
 import com.jaarquesuoc.shop.carts.models.Cart;
 import com.jaarquesuoc.shop.carts.models.OrderItem;
@@ -33,4 +34,8 @@ public interface CartsMapper {
     @Mapping(target = "date", ignore = true)
     @Mapping(target = "id", ignore = true)
     Cart replicate(Cart cart);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "orderId", ignore = true)
+    OrderDto toOrderDto(CartDto cartDto);
 }

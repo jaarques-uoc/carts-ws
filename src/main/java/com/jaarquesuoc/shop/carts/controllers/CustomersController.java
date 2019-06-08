@@ -23,6 +23,11 @@ public class CustomersController {
         return cartsService.getCartDto(customerId);
     }
 
+    @GetMapping("/customers/{customerId}/carts/current/checkout")
+    public void checkoutCart(@PathVariable("customerId") final String customerId) {
+        cartsService.checkoutCart(customerId);
+    }
+
     @PostMapping("/customers/{customerId}/carts/current/items")
     public CartDto updateItemInCart(@PathVariable("customerId") final String customerId,
                                     @RequestBody OrderItemDto updatedOrderItemDto) {

@@ -3,6 +3,7 @@ package com.jaarquesuoc.shop.carts.services;
 import com.jaarquesuoc.shop.carts.dtos.CartDto;
 import com.jaarquesuoc.shop.carts.dtos.CustomerDto;
 import com.jaarquesuoc.shop.carts.dtos.NextOrderIdDto;
+import com.jaarquesuoc.shop.carts.dtos.OrderDto;
 import com.jaarquesuoc.shop.carts.dtos.OrderItemDto;
 import com.jaarquesuoc.shop.carts.dtos.ProductDto;
 import com.jaarquesuoc.shop.carts.exceptions.NumberOfItemsExceededException;
@@ -41,6 +42,12 @@ public class CartsService {
         CartDto cartDto = CartsMapper.INSTANCE.toCartDto(getCart(customerId));
 
         return populateCartDtoWithProducts(cartDto);
+    }
+
+    public void checkoutCart(final String customerId) {
+        CartDto cartDto = getCartDto(customerId);
+
+        ordersService.createCustomerOrderDto(cartDto, customerId);
     }
 
     public List<CartDto> getAllCartDtos() {
