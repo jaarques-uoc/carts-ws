@@ -1,6 +1,7 @@
 # carts-ws [![Build Status](https://travis-ci.com/jaarques-uoc/carts-ws.svg?branch=master)](https://travis-ci.com/jaarques-uoc/carts-ws)
 
 Command line tools:
+
 * Mongodb:
     * Installation:
         * `brew tap mongodb/brew`
@@ -16,9 +17,11 @@ Command line tools:
     * stop all containers: `docker stop $(docker ps -a -q)`
 
 Initialization endpoint:
+
 * `curl localhost:700/init`: It removes all the existing carts from the DB.
 
 Monitoring urls:
+
 * Travis CI history: https://travis-ci.com/jaarques-uoc/carts-ws/
 * Docker image: https://cloud.docker.com/repository/docker/jaarquesuoc/carts-ws
 * Heroku app health-check: https://carts-ws.herokuapp.com/actuator/health

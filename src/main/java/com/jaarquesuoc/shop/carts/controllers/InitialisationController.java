@@ -20,8 +20,8 @@ public class InitialisationController {
         cartsService.cleanDb();
 
         return InitialisationDto.builder()
-            .initialisationStatus(OK)
-            .metadata(cartsService.getAllCartDtos())
-            .build();
+                .initialisationStatus(OK)
+                .metadata(cartsService.getAllCartDtos())
+                .build();
     }
 }

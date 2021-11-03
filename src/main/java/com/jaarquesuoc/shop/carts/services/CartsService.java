@@ -26,17 +26,12 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CartsService {
 
-    private final OrdersService ordersService;
-
-    private final ProductsService productsService;
-
-    private final CustomersService customersService;
-
-    private final CartsRepository cartsRepository;
-
     private static final int MIN_ORDER_ITEMS = 0;
-
     private static final int MAX_ORDER_ITEMS = 10;
+    private final OrdersService ordersService;
+    private final ProductsService productsService;
+    private final CustomersService customersService;
+    private final CartsRepository cartsRepository;
 
     public CartDto getCartDto(final String customerId) {
         CartDto cartDto = CartsMapper.INSTANCE.toCartDto(getCart(customerId));
@@ -70,7 +65,7 @@ public class CartsService {
         Cart cart = CartsMapper.INSTANCE.replicate(getCart(customerDto.getId()));
 
         List<OrderItem> orderItems = Optional.ofNullable(cart.getOrderItems())
-            .orElse(new ArrayList<>());
+                .orElse(new ArrayList<>());
 
         incrementOrderItem(orderItems, productDto);
 
@@ -84,12 +79,12 @@ public class CartsService {
 
     private void incrementOrderItem(final List<OrderItem> orderItems, final ProductDto productDto) {
         OrderItem orderItem = orderItems.stream()
-            .filter(oi -> oi.getProductId().equals(productDto.getId()))
-            .findFirst()
-            .orElse(OrderItem.builder()
-                .productId(productDto.getId())
-                .quantity(0)
-                .build());
+                .filter(oi -> oi.getProductId().equals(productDto.getId()))
+                .findFirst()
+                .orElse(OrderItem.builder()
+                        .productId(productDto.getId())
+                        .quantity(0)
+                        .build());
 
         orderItems.remove(orderItem);
 
@@ -120,7 +115,7 @@ public class CartsService {
         Cart cart = CartsMapper.INSTANCE.replicate(getCart(customerDto.getId()));
 
         List<OrderItem> orderItems = Optional.ofNullable(cart.getOrderItems())
-            .orElse(new ArrayList<>());
+                .orElse(new ArrayList<>());
 
         removeOrderItem(orderItems, upsertOrderItemDto);
 
@@ -137,8 +132,8 @@ public class CartsService {
 
     private void removeOrderItem(final List<OrderItem> orderItems, final OrderItemDto upsertOrderItemDto) {
         List<OrderItem> toBeRemoved = orderItems.stream()
-            .filter(orderItem -> orderItem.getProductId().equals(upsertOrderItemDto.getProductDto().getId()))
-            .collect(toList());
+                .filter(orderItem -> orderItem.getProductId().equals(upsertOrderItemDto.getProductDto().getId()))
+                .collect(toList());
 
         orderItems.removeAll(toBeRemoved);
     }
@@ -147,14 +142,14 @@ public class CartsService {
         NextOrderIdDto nextOrderIdDto = ordersService.getNextOrderId(customerId);
 
         return cartsRepository.findFirstByOrderIdOrderByDateDesc(nextOrderIdDto.getNextOrderId())
-            .orElse(createNewCart(nextOrderIdDto.getNextOrderId(), customerId));
+                .orElse(createNewCart(nextOrderIdDto.getNextOrderId(), customerId));
     }
 
     private Cart createNewCart(final String orderId, final String customerId) {
         return Cart.builder()
-            .orderId(orderId)
-            .customerId(customerId)
-            .build();
+                .orderId(orderId)
+                .customerId(customerId)
+                .build();
     }
 
     private CartDto populateCartDtoWithProducts(final CartDto cartDto) {
@@ -163,14 +158,15 @@ public class CartsService {
         }
 
         List<String> productIds = cartDto.getOrderItemDtos().stream()
-            .map(OrderItemDto::getProductDto)
-            .map(ProductDto::getId)
-            .collect(toList());
+                .map(OrderItemDto::getProductDto)
+                .map(ProductDto::getId)
+                .collect(toList());
 
         Map<String, ProductDto> productDtos = productsService.getProducts(productIds);
 
         cartDto.getOrderItemDtos()
-            .forEach(orderItemDto -> orderItemDto.setProductDto(productDtos.get(orderItemDto.getProductDto().getId())));
+                .forEach(orderItemDto -> orderItemDto
+                        .setProductDto(productDtos.get(orderItemDto.getProductDto().getId())));
 
         return cartDto;
     }
